@@ -163,3 +163,4 @@ migrations/
 media/
 staticfiles/
 static/
+.idea/
