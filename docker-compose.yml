@@ -4,6 +4,7 @@ services:
   uz_movie:
     build: ./
     container_name: "uz_movie"
+    command: /uz_movie/entrypoint.sh
     restart: always
     volumes:
       - .:/uz_movie

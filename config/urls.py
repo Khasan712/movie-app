@@ -34,11 +34,11 @@ schema_view = drf_yasg_views.get_schema_view(
         terms_of_service="https://www.pegb.tech",
     ),
     public=True,
-    permission_classes=[AllowAny],
+    permission_classes=[IsAuthenticated],
 )
 
 
-urlpatterns = [
+urlpatterns = ([
     # Users
     path('v1/users/', include('v1.users.urls')),
     path('v1/core/', include('v1.core.urls')),
@@ -54,5 +54,5 @@ urlpatterns = [
     # Admin
     path('', admin.site.urls),
 
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) +\
+    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
