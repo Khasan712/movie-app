@@ -1,6 +1,72 @@
 from rest_framework import serializers
-from .models import Genre, Category, Cinema, Series, CadreCinema
+from .models import Genre, Category, Cinema, Series, CadreCinema, Banner, MyList
 from ..utils.raise_errors import SerializerRaise400
+
+
+class SeriesLessDataSerializerV1(serializers.ModelSerializer):
+    class Meta:
+        model = Series
+        fields = ('id', 'name', 'description', 'main_image')
+
+
+class CategorySeriesListSerializerV1(serializers.Serializer):
+
+    def to_representation(self, instance):
+        series = Series.objects.filter(category_id=instance.id, parent_id=None).order_by('-id')[:5]
+        return {
+            'id': instance.id,
+            'name': instance.name,
+            'Series': SeriesLessDataSerializerV1(series, many=True).data
+        }
+
+
+class CinemaLessDataSerializerV1(serializers.ModelSerializer):
+    class Meta:
+        model = Cinema
+        fields = ('id', 'name', 'description', 'main_image')
+
+
+class CategoryListSerializerV1(serializers.Serializer):
+
+    def to_representation(self, instance):
+        movies = Cinema.objects.filter(category_id=instance.id).order_by('-id')[:5]
+        return {
+            'id': instance.id,
+            'name': instance.name,
+            'movies': CinemaLessDataSerializerV1(movies, many=True).data
+        }
+
+
+class BannerGetSerializerV1(serializers.Serializer):
+
+    def to_representation(self, instance):
+        if instance.cinema:
+            return {
+                'id': instance.id,
+                'movie': CinemaLessDataSerializerV1(instance.cinema).data
+            }
+        return {
+            'id': instance.id,
+            'series': SeriesLessDataSerializerV1(instance.series).data
+        }
+
+
+class BannerCreateUpdateSerializerV1(serializers.ModelSerializer):
+    class Meta:
+        model = Banner
+        fields = ('id', 'cinema', 'series')
+
+    def to_representation(self, instance):
+        return BannerGetSerializerV1(instance).data
+
+
+class MyListCreateUpdateSerializerV1(serializers.ModelSerializer):
+    class Meta:
+        model = MyList
+        fields = ('id', 'cinema', 'series')
+
+    def to_representation(self, instance):
+        return BannerGetSerializerV1(instance).data
 
 
 class SeriesDetailReadOnlySerializerV1(serializers.ModelSerializer):

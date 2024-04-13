@@ -1,0 +1,2 @@
+CINEMA = 'cinema'
+SERIES = 'series'
