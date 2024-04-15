@@ -38,7 +38,7 @@ schema_view = drf_yasg_views.get_schema_view(
 )
 
 
-urlpatterns = ([
+urlpatterns = [
     # Users
     path('v1/users/', include('v1.users.urls')),
     path('v1/core/', include('v1.core.urls')),
@@ -52,7 +52,6 @@ urlpatterns = ([
     path("swagger/yaml/", schema_view.without_ui(cache_timeout=0), name="schema-yaml"),
 
     # Admin
-    path('', admin.site.urls),
+    path('admin/', admin.site.urls),
 
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) +\
-    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
