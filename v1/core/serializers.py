@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Genre, Category, Cinema, Series, CadreCinema, Banner, MyList
+from .models import Genre, Category, Cinema, Series, CadreCinema, Banner, MyList, TopCinema
 from ..utils.raise_errors import SerializerRaise400
 
 
@@ -54,6 +54,15 @@ class BannerGetSerializerV1(serializers.Serializer):
 class BannerCreateUpdateSerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Banner
+        fields = ('id', 'cinema', 'series')
+
+    def to_representation(self, instance):
+        return BannerGetSerializerV1(instance).data
+
+
+class TopCinemaCreateUpdateSerializerV1(serializers.ModelSerializer):
+    class Meta:
+        model = TopCinema
         fields = ('id', 'cinema', 'series')
 
     def to_representation(self, instance):

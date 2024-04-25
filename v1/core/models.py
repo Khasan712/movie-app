@@ -71,6 +71,9 @@ class Banner(CustomBaseAbstract):
     cinema = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True, blank=True)
     series = models.ForeignKey(Series, on_delete=models.SET_NULL, null=True, blank=True)
 
+    class Meta:
+        unique_together = ('cinema', 'series')
+
     def __str__(self):
         return f'{self.id}'
 
@@ -79,6 +82,14 @@ class MyList(CustomBaseAbstract):
     cinema = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True, blank=True)
     series = models.ForeignKey(Series, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return f'{self.id}'
+
+
+class TopCinema(CustomBaseAbstract):
+    cinema = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True, blank=True)
+    series = models.ForeignKey(Series, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f'{self.id}'
