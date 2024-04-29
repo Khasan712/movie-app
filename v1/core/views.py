@@ -401,12 +401,12 @@ class CategoryAdminApiV1(
 
     @action(methods=['GET'], detail=False, url_name='movies', url_path='movies')
     def get_movies(self, request):
-        queryset = self.get_queryset().filter(cinema_category__isnull=False)
+        queryset = self.get_queryset().filter(cinema_category__isnull=False).distinct()
         serializer = CategoryListSerializerV1(queryset, many=True)
         return Response(serializer.data)
 
     @action(methods=['GET'], detail=False, url_name='series', url_path='series')
     def get_series(self, request):
-        queryset = self.get_queryset().filter(series_category__isnull=False)
+        queryset = self.get_queryset().filter(series_category__isnull=False).distinct()
         serializer = CategorySeriesListSerializerV1(queryset, many=True)
         return Response(serializer.data)
