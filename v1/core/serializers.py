@@ -56,6 +56,12 @@ class BannerCreateUpdateSerializerV1(serializers.ModelSerializer):
         model = Banner
         fields = ('id', 'cinema', 'series')
 
+    def create(self, validated_data):
+        obj = Banner.objects.filter(**validated_data).first()
+        if obj:
+            raise SerializerRaise400({'error': 'Already exists'})
+        return super().create(validated_data)
+
     def to_representation(self, instance):
         return BannerGetSerializerV1(instance).data
 

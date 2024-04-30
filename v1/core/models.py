@@ -71,9 +71,6 @@ class Banner(CustomBaseAbstract):
     cinema = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True, blank=True)
     series = models.ForeignKey(Series, on_delete=models.SET_NULL, null=True, blank=True)
 
-    class Meta:
-        unique_together = ('cinema', 'series')
-
     def __str__(self):
         return f'{self.id}'
 

@@ -15,11 +15,13 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from v1.utils import const_veriables
+from ..commons.allowed_http_methods import HTTP_ALLOWED_METHODS
 
 
 class TopCinemaApiV1(viewsets.ModelViewSet):
     queryset = TopCinema.objects.select_related('cinema').order_by('-id')
     permission_classes = (IsAdmin,)
+    http_method_names = HTTP_ALLOWED_METHODS
 
     def check_permissions(self, request):
         if request.method in ('POST', 'PATCH', 'DELETE'):
@@ -150,7 +152,8 @@ class BannerApiV1(
 ):
     queryset = Banner.objects.select_related('cinema', 'series').order_by('-id')
     permission_classes = (IsAdmin,)
-    
+    http_method_names = HTTP_ALLOWED_METHODS
+
     def check_permissions(self, request):
         if request.method in ('POST', 'PATCH'):
             super().check_permissions(request)
@@ -217,6 +220,7 @@ class SeriesApiV1(
 ):
     queryset = Series.objects.select_related('genre', 'category').order_by('-id')
     permission_classes = (IsAdmin,)
+    http_method_names = HTTP_ALLOWED_METHODS
 
     def check_permissions(self, request):
         if request.method in ('POST', 'PATCH'):
@@ -289,6 +293,7 @@ class CinemaApiV1(
 ):
     queryset = Cinema.objects.select_related('genre', 'category').order_by('-id')
     permission_classes = (IsAdmin,)
+    http_method_names = HTTP_ALLOWED_METHODS
 
     def check_permissions(self, request):
         if request.method in ('POST', 'PATCH'):
@@ -347,6 +352,7 @@ class GenreAdminApiV1(
     queryset = Genre.objects.all().order_by('-id')
     serializer_class = GenreSerializerV1
     permission_classes = (IsAdmin,)
+    http_method_names = HTTP_ALLOWED_METHODS
 
     def check_permissions(self, request):
         if request.method in ('POST', 'PATCH'):
@@ -377,6 +383,7 @@ class CategoryAdminApiV1(
     queryset = Category.objects.all().order_by('-id')
     serializer_class = CategorySerializerV1
     permission_classes = (IsAdmin,)
+    http_method_names = HTTP_ALLOWED_METHODS
 
     def check_permissions(self, request):
         if request.method in ('POST', 'PATCH'):
