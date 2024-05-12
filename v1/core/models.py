@@ -5,6 +5,8 @@ from v1.users.models import User
 
 class Genre(CustomBaseAbstract):
     name = models.CharField(max_length=255)
+    name_ru = models.CharField(max_length=255, blank=True, null=True)
+    name_en = models.CharField(max_length=255, blank=True, null=True)
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
@@ -13,6 +15,8 @@ class Genre(CustomBaseAbstract):
 
 class Category(CustomBaseAbstract):
     name = models.CharField(max_length=255)
+    name_ru = models.CharField(max_length=255, blank=True, null=True)
+    name_en = models.CharField(max_length=255, blank=True, null=True)
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
@@ -28,8 +32,12 @@ class Cinema(CustomBaseAbstract):
     trailer = models.FileField(upload_to='cinema/trailer/', blank=True, null=True)
     trailer_url = models.CharField(max_length=500, blank=True, null=True)
     name = models.CharField(max_length=255)
+    name_ru = models.CharField(max_length=255, blank=True, null=True)
+    name_en = models.CharField(max_length=255, blank=True, null=True)
     year = models.CharField(max_length=10, blank=True, null=True)
     description = models.CharField(max_length=500, blank=True, null=True)
+    description_ru = models.CharField(max_length=255, blank=True, null=True)
+    description_en = models.CharField(max_length=255, blank=True, null=True)
     rejisor = models.CharField(max_length=255, blank=True, null=True)
     main_users = models.CharField(max_length=500, blank=True, null=True)
     video = models.FileField(upload_to='cinema/video/', blank=True, null=True)
@@ -47,8 +55,12 @@ class Series(CustomBaseAbstract):
     trailer = models.FileField(upload_to='series/trailer/', blank=True, null=True)
     trailer_url = models.CharField(max_length=500, blank=True, null=True)
     name = models.CharField(max_length=255)
+    name_ru = models.CharField(max_length=255, blank=True, null=True)
+    name_en = models.CharField(max_length=255, blank=True, null=True)
     year = models.CharField(max_length=10, blank=True, null=True)
     description = models.CharField(max_length=500, blank=True, null=True)
+    description_ru = models.CharField(max_length=255, blank=True, null=True)
+    description_en = models.CharField(max_length=255, blank=True, null=True)
     rejisor = models.CharField(max_length=255, blank=True, null=True)
     main_users = models.CharField(max_length=500, blank=True, null=True)
     video = models.FileField(upload_to='series/video/', blank=True, null=True)

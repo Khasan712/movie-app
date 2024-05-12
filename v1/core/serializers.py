@@ -6,7 +6,7 @@ from ..utils.raise_errors import SerializerRaise400
 class SeriesLessDataSerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Series
-        fields = ('id', 'name', 'description', 'main_image')
+        fields = ('id', 'name', 'name_ru', 'name_en', 'description', 'description_ru', 'description_en', 'main_image')
 
 
 class CategorySeriesListSerializerV1(serializers.Serializer):
@@ -23,7 +23,9 @@ class CategorySeriesListSerializerV1(serializers.Serializer):
 class CinemaLessDataSerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Cinema
-        fields = ('id', 'name', 'description', 'main_image')
+        fields = (
+            'id', 'name', 'name_ru', 'name_en', 'description', 'description_ru', 'description_en', 'main_image'
+        )
 
 
 class CategoryListSerializerV1(serializers.Serializer):
@@ -88,8 +90,8 @@ class SeriesDetailReadOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Series
         fields = (
-            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'year', 'description', 'rejisor',
-            'main_users', 'video'
+            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'name_ru', 'name_en', 'year',
+            'description', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video'
         )
 
     def to_representation(self, instance):
@@ -112,7 +114,10 @@ class SeriesDetailReadOnlySerializerV1(serializers.ModelSerializer):
 class SeriesReadOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Series
-        fields = ('id', 'genre', 'category', 'main_image', 'name', 'year', 'description')
+        fields = (
+            'id', 'genre', 'category', 'main_image', 'name', 'name_ru', 'name_en', 'year', 'description',
+            'description_ru', 'description_en'
+        )
 
     def to_representation(self, instance):
         res = super().to_representation(instance)
@@ -131,8 +136,8 @@ class SeriesWriteOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Series
         fields = (
-            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'year', 'description', 'rejisor',
-            'main_users', 'video', 'parent'
+            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'name_ru', 'name_en', 'year',
+            'description', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video', 'parent'
         )
 
     def to_representation(self, instance):
@@ -192,8 +197,8 @@ class CinemaDetailReadOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Cinema
         fields = (
-            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'year', 'description', 'rejisor',
-            'main_users', 'video'
+            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'name_ru', 'name_en', 'year',
+            'description', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video'
         )
 
     def to_representation(self, instance):
@@ -212,7 +217,10 @@ class CinemaDetailReadOnlySerializerV1(serializers.ModelSerializer):
 class CinemaReadOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Cinema
-        fields = ('id', 'genre', 'category', 'main_image', 'name', 'year', 'description')
+        fields = (
+            'id', 'genre', 'category', 'main_image', 'name', 'name_ru', 'name_en', 'year', 'description',
+            'description_ru', 'description_en'
+        )
 
     def to_representation(self, instance):
         res = super().to_representation(instance)
@@ -229,8 +237,8 @@ class CinemaWriteOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Cinema
         fields = (
-            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'year', 'description', 'rejisor',
-            'main_users', 'video'
+            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'name_ru', 'name_en', 'year',
+            'description', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video'
         )
 
     def to_representation(self, instance):
@@ -244,11 +252,11 @@ class GenreSerializerV1(serializers.ModelSerializer):
 
     class Meta:
         model = Genre
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'name_ru', 'name_en')
 
 
 class CategorySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'name_ru', 'name_en')
 
