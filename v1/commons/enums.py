@@ -1,6 +1,18 @@
 from enum import Enum
 
 
+class VideoContentType(Enum):
+    movie = 'movie'
+    series = 'series'
+
+    @classmethod
+    def choices(cls):
+        return (
+            (key.value, key.name)
+            for key in cls
+        )
+
+
 class WordPhrase(Enum):
     grammar = 'grammar'
     semantic_expression = 'semantic_expression'

@@ -184,26 +184,19 @@ class BannerApiV1(
         content_type = params.get('content_type')
         filter_data = Q()
         if search_param:
-            filter_data &= (
-                Q(cinema__name__icontains=search_param) | Q(cinema__description__icontains=search_param) |
-                Q(series__name__icontains=search_param) | Q(series__description__icontains=search_param)
-            )
+            filter_data &= (Q(cinema__name__icontains=search_param) | Q(cinema__description__icontains=search_param))
         if category_id:
             int_category_id = category_id.replace(',', '')
             if int_category_id.isdigit():
-                filter_data &= (
-                    Q(cinema__category_id__in=category_id.split(',')) | Q(series__category_id__in=category_id.split(','))
-                )
+                filter_data &= Q(cinema__category_id__in=category_id.split(','))
         if genre_id:
             int_genre_id = genre_id.replace(',', '')
             if int_genre_id.isdigit():
-                filter_data &= (
-                        Q(cinema__genre_id__in=genre_id.split(',')) | Q(series__genre_id__in=genre_id.split(','))
-                )
+                filter_data &= Q(cinema__genre_id__in=genre_id.split(','))
         if content_type == const_veriables.CINEMA:
-            filter_data &= Q(cinema__isnull=False)
+            filter_data &= Q(cinema__content_type=const_veriables.CINEMA)
         if content_type == const_veriables.SERIES:
-            filter_data &= Q(series__isnull=False)
+            filter_data &= Q(series__content_type=const_veriables.SERIES)
 
         return super().get_queryset().filter(filter_data)
 
@@ -250,8 +243,8 @@ class SeriesApiV1(
             filter_data = Q(parent__isnull=True)
             if q:
                 filter_data &= (
-                    Q(trailer_url__icontains=q) | Q(name__icontains=q) | Q(year__icontains=q) |
-                    Q(description__icontains=q) | Q(rejisor__icontains=q) | Q(main_users__icontains=q)
+                    Q(name__icontains=q) | Q(year__icontains=q) | Q(description__icontains=q) |
+                    Q(rejisor__icontains=q) | Q(main_users__icontains=q)
                 )
             if category_id:
                 int_category_id = category_id.replace(',', '')
@@ -314,26 +307,27 @@ class CinemaApiV1(
         return super().list(request, *args, **kwargs)
 
     def get_queryset(self):
-        params = self.request.query_params
-        q = params.get('q')
-        category_id = params.get('category_id')
-        genre_id = params.get('genre_id')
-
         filter_data = Q()
-        if q:
-            filter_data &= (
-                Q(trailer_url__icontains=q) | Q(name__icontains=q) | Q(year__icontains=q) | Q(description__icontains=q) |
-                Q(rejisor__icontains=q) | Q(main_users__icontains=q)
-            )
-        if category_id:
-            int_category_id = category_id.replace(',', '')
-            if int_category_id.isdigit():
-                filter_data &= Q(category_id__in=category_id.split(','))
-        if genre_id:
-            int_genre_id = genre_id.replace(',', '')
-            if int_genre_id.isdigit():
-                filter_data &= Q(genre_id__in=genre_id.split(','))
+        if self.lookup_field not in self.kwargs:
+            params = self.request.query_params
+            q = params.get('q')
+            category_id = params.get('category_id')
+            genre_id = params.get('genre_id')
 
+            filter_data &= Q(parent__isnull=True)
+            if q:
+                filter_data &= (
+                    Q(name__icontains=q) | Q(year__icontains=q) | Q(description__icontains=q) |
+                    Q(rejisor__icontains=q) | Q(main_users__icontains=q)
+                )
+            if category_id:
+                int_category_id = category_id.replace(',', '')
+                if int_category_id.isdigit():
+                    filter_data &= Q(category_id__in=category_id.split(','))
+            if genre_id:
+                int_genre_id = genre_id.replace(',', '')
+                if int_genre_id.isdigit():
+                    filter_data &= Q(genre_id__in=genre_id.split(','))
         return super().get_queryset().filter(filter_data)
 
     def get_serializer_class(self):

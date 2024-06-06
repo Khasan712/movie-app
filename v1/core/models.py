@@ -1,6 +1,7 @@
 from django.db import models
 from v1.utils.abstract import CustomBaseAbstract
 from v1.users.models import User
+from v1.commons.enums import VideoContentType
 
 
 class Genre(CustomBaseAbstract):
@@ -24,6 +25,7 @@ class Category(CustomBaseAbstract):
 
 
 class Cinema(CustomBaseAbstract):
+    content_type = models.CharField(max_length=20, choices=VideoContentType.choices(), default='movie')
     genre = models.ForeignKey(Genre, on_delete=models.SET_NULL, null=True, blank=True)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='cinema_category'
@@ -41,6 +43,7 @@ class Cinema(CustomBaseAbstract):
     rejisor = models.CharField(max_length=255, blank=True, null=True)
     main_users = models.CharField(max_length=500, blank=True, null=True)
     video = models.FileField(upload_to='cinema/video/', blank=True, null=True)
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return f'{self.id} - {self.name}'
@@ -72,7 +75,6 @@ class Series(CustomBaseAbstract):
 
 class CadreCinema(CustomBaseAbstract):
     cinema = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True, blank=True)
-    series = models.ForeignKey(Series, on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(upload_to='cinema/cadre/')
 
     def __str__(self):

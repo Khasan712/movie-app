@@ -88,7 +88,7 @@ class MyListCreateUpdateSerializerV1(serializers.ModelSerializer):
 
 class SeriesDetailReadOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
-        model = Series
+        model = Cinema
         fields = (
             'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'name_ru', 'name_en', 'year',
             'description', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video'
@@ -113,7 +113,7 @@ class SeriesDetailReadOnlySerializerV1(serializers.ModelSerializer):
 
 class SeriesReadOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
-        model = Series
+        model = Cinema
         fields = (
             'id', 'genre', 'category', 'main_image', 'name', 'name_ru', 'name_en', 'year', 'description',
             'description_ru', 'description_en'
@@ -134,7 +134,7 @@ class SeriesReadOnlySerializerV1(serializers.ModelSerializer):
 
 class SeriesWriteOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
-        model = Series
+        model = Cinema
         fields = (
             'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'name_ru', 'name_en', 'year',
             'description', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video', 'parent'
@@ -149,11 +149,9 @@ class SeriesWriteOnlySerializerV1(serializers.ModelSerializer):
 
 class CadreCreateSerializerV1(serializers.Serializer):
     cinema_id = serializers.IntegerField(required=False)
-    series_id = serializers.IntegerField(required=False)
 
     def create(self, validated_data):
         cinema_id = validated_data.get('cinema_id')
-        series_id = validated_data.get('series_id')
 
         if cinema_id:
             cadre_list = []
@@ -163,18 +161,6 @@ class CadreCreateSerializerV1(serializers.Serializer):
             for image in images:
                 cadre_list.append(CadreCinema(
                     cinema_id=cinema_id, image=image
-                ))
-            CadreCinema.objects.bulk_create(cadre_list)
-            return validated_data
-
-        elif series_id:
-            cadre_list = []
-            images = self.context['request'].FILES.getlist('image')
-            if not images:
-                raise SerializerRaise400({'error': 'Upload image!'})
-            for image in images:
-                cadre_list.append(CadreCinema(
-                    series_id=series_id, image=image
                 ))
             CadreCinema.objects.bulk_create(cadre_list)
             return validated_data
@@ -211,6 +197,10 @@ class CinemaDetailReadOnlySerializerV1(serializers.ModelSerializer):
         category = res.get('category')
         if category:
             res['category'] = CategorySerializerV1(instance.category).data
+        if not instance.parent and instance.content_type == 'series':
+            series = Cinema.objects.select_related('parent').filter(parent_id=instance.id)
+            res['series_qty'] = series.count()
+            res['series'] = self.__class__(series, many=True).data
         return res
 
 
@@ -230,6 +220,8 @@ class CinemaReadOnlySerializerV1(serializers.ModelSerializer):
         category = res.get('category')
         if category:
             res['category'] = CategorySerializerV1(instance.category).data
+        if not instance.parent:
+            res['series_qty'] = Cinema.objects.select_related('parent').filter(parent_id=instance.id).count()
         return res
 
 
@@ -237,8 +229,8 @@ class CinemaWriteOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Cinema
         fields = (
-            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'name_ru', 'name_en', 'year',
-            'description', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video'
+            'id', 'content_type', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'name_ru', 'name_en', 'year',
+            'description', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video', 'parent'
         )
 
     def to_representation(self, instance):
