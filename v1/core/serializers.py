@@ -42,14 +42,24 @@ class CategoryListSerializerV1(serializers.Serializer):
 class BannerGetSerializerV1(serializers.Serializer):
 
     def to_representation(self, instance):
+        print(self.context['request'].user, '?????????????')
         if instance.cinema:
+            is_in_my_list = MyList.objects.select_related('cinema', 'user').filter(
+                cinema_id=instance.cinema.id, user_id=self.context['request'].user.id
+            ).first()
             return {
                 'id': instance.id,
-                'movie': CinemaLessDataSerializerV1(instance.cinema).data
+                'movie': CinemaLessDataSerializerV1(instance.cinema).data,
+                'is_in_my_list': True if is_in_my_list else False
             }
+
+        is_in_my_list = MyList.objects.select_related('series', 'user').filter(
+            series_id=instance.series.id, user_id=self.context['request'].user.id
+        ).first()
         return {
             'id': instance.id,
-            'series': SeriesLessDataSerializerV1(instance.series).data
+            'series': SeriesLessDataSerializerV1(instance.series).data,
+            'is_in_my_list': True if is_in_my_list else False
         }
 
 
@@ -65,7 +75,7 @@ class BannerCreateUpdateSerializerV1(serializers.ModelSerializer):
         return super().create(validated_data)
 
     def to_representation(self, instance):
-        return BannerGetSerializerV1(instance).data
+        return BannerGetSerializerV1(instance, context=self.context).data
 
 
 class TopCinemaCreateUpdateSerializerV1(serializers.ModelSerializer):
@@ -108,6 +118,15 @@ class SeriesDetailReadOnlySerializerV1(serializers.ModelSerializer):
             series = Series.objects.filter(parent_id=instance.id)
             res['series_qty'] = series.count()
             res['series'] = self.__class__(series, many=True).data
+            is_in_my_list = MyList.objects.select_related('series', 'user').filter(
+                series_id=instance.id, user_id=self.context['request'].user.id
+            ).first()
+            res['is_in_my_list'] = True if is_in_my_list else False
+        else:
+            is_in_my_list = MyList.objects.select_related('series', 'user').filter(
+                series_id=instance.parent.id, user_id=self.context['request'].user.id
+            ).first()
+            res['is_in_my_list'] = True if is_in_my_list else False
         return res
 
 
@@ -211,6 +230,10 @@ class CinemaDetailReadOnlySerializerV1(serializers.ModelSerializer):
         category = res.get('category')
         if category:
             res['category'] = CategorySerializerV1(instance.category).data
+        is_in_my_list = MyList.objects.select_related('cinema', 'user').filter(
+            cinema_id=instance.id, user_id=self.context['request'].user.id
+        ).first()
+        res['is_in_my_list'] = True if is_in_my_list else False
         return res
 
 

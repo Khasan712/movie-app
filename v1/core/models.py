@@ -92,6 +92,9 @@ class MyList(CustomBaseAbstract):
     series = models.ForeignKey(Series, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
+    class Meta:
+        unique_together = (('cinema', 'user'), ('series', 'user'))
+
     def __str__(self):
         return f'{self.id}'
 

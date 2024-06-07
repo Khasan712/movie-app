@@ -10,10 +10,10 @@ from .serializers import (
     MyListCreateUpdateSerializerV1, TopCinemaCreateUpdateSerializerV1
 )
 from rest_framework import viewsets, mixins
-from v1.utils.permissions import IsAdmin
+from v1.utils.permissions import IsAdmin, IsCustomer
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from v1.utils import const_veriables
 from ..commons.allowed_http_methods import HTTP_ALLOWED_METHODS
 
@@ -151,12 +151,13 @@ class BannerApiV1(
     viewsets.GenericViewSet
 ):
     queryset = Banner.objects.select_related('cinema', 'series').order_by('-id')
-    permission_classes = (IsAdmin,)
     http_method_names = HTTP_ALLOWED_METHODS
 
-    def check_permissions(self, request):
-        if request.method in ('POST', 'PATCH'):
-            super().check_permissions(request)
+    def get_permissions(self):
+        if self.request.method in ('POST', 'PATCH'):
+            return [IsAdmin()]
+        else:
+            return [AllowAny()]
 
     search_param = openapi.Parameter(
         'q', in_=openapi.IN_QUERY, description='Search ...', required=False, type=openapi.TYPE_STRING
@@ -219,12 +220,12 @@ class SeriesApiV1(
     viewsets.GenericViewSet
 ):
     queryset = Series.objects.select_related('genre', 'category').order_by('-id')
-    permission_classes = (IsAdmin,)
     http_method_names = HTTP_ALLOWED_METHODS
 
-    def check_permissions(self, request):
-        if request.method in ('POST', 'PATCH'):
-            super().check_permissions(request)
+    def get_permissions(self):
+        if self.request.method in ('POST', 'PATCH'):
+            return [IsAdmin()]
+        return [AllowAny()]
 
     search_param = openapi.Parameter(
         'q', in_=openapi.IN_QUERY, description='Search ...', required=False, type=openapi.TYPE_STRING
@@ -292,12 +293,12 @@ class CinemaApiV1(
     viewsets.GenericViewSet
 ):
     queryset = Cinema.objects.select_related('genre', 'category').order_by('-id')
-    permission_classes = (IsAdmin,)
     http_method_names = HTTP_ALLOWED_METHODS
 
-    def check_permissions(self, request):
-        if request.method in ('POST', 'PATCH'):
-            super().check_permissions(request)
+    def get_permissions(self):
+        if self.request.method in ('POST', 'PATCH'):
+            return [IsAdmin()]
+        return [AllowAny()]
 
     search_param = openapi.Parameter(
         'q', in_=openapi.IN_QUERY, description='Search ...', required=False, type=openapi.TYPE_STRING
