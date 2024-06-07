@@ -42,7 +42,6 @@ class CategoryListSerializerV1(serializers.Serializer):
 class BannerGetSerializerV1(serializers.Serializer):
 
     def to_representation(self, instance):
-        print(self.context['request'].user, '?????????????')
         if instance.cinema:
             is_in_my_list = MyList.objects.select_related('cinema', 'user').filter(
                 cinema_id=instance.cinema.id, user_id=self.context['request'].user.id
