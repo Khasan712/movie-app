@@ -4,23 +4,23 @@ from v1.users.models import User
 
 
 class Genre(CustomBaseAbstract):
-    name = models.CharField(max_length=255)
+    name_uz = models.CharField(max_length=255)
     name_ru = models.CharField(max_length=255, blank=True, null=True)
     name_en = models.CharField(max_length=255, blank=True, null=True)
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.name_uz
 
 
 class Category(CustomBaseAbstract):
-    name = models.CharField(max_length=255)
+    name_uz = models.CharField(max_length=255)
     name_ru = models.CharField(max_length=255, blank=True, null=True)
     name_en = models.CharField(max_length=255, blank=True, null=True)
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.name_uz
 
 
 class Cinema(CustomBaseAbstract):
@@ -31,11 +31,11 @@ class Cinema(CustomBaseAbstract):
     main_image = models.ImageField(upload_to='cinema/main_image/')
     trailer = models.FileField(upload_to='cinema/trailer/', blank=True, null=True)
     trailer_url = models.CharField(max_length=500, blank=True, null=True)
-    name = models.CharField(max_length=255)
+    name_uz = models.CharField(max_length=255)
     name_ru = models.CharField(max_length=255, blank=True, null=True)
     name_en = models.CharField(max_length=255, blank=True, null=True)
     year = models.CharField(max_length=10, blank=True, null=True)
-    description = models.CharField(max_length=500, blank=True, null=True)
+    description_uz = models.CharField(max_length=500, blank=True, null=True)
     description_ru = models.CharField(max_length=255, blank=True, null=True)
     description_en = models.CharField(max_length=255, blank=True, null=True)
     rejisor = models.CharField(max_length=255, blank=True, null=True)
@@ -43,7 +43,7 @@ class Cinema(CustomBaseAbstract):
     video = models.FileField(upload_to='cinema/video/', blank=True, null=True)
 
     def __str__(self):
-        return f'{self.id} - {self.name}'
+        return f'{self.id} - {self.name_uz}'
 
 
 class Series(CustomBaseAbstract):
@@ -54,11 +54,11 @@ class Series(CustomBaseAbstract):
     main_image = models.ImageField(upload_to='series/main_image/')
     trailer = models.FileField(upload_to='series/trailer/', blank=True, null=True)
     trailer_url = models.CharField(max_length=500, blank=True, null=True)
-    name = models.CharField(max_length=255)
+    name_uz = models.CharField(max_length=255)
     name_ru = models.CharField(max_length=255, blank=True, null=True)
     name_en = models.CharField(max_length=255, blank=True, null=True)
     year = models.CharField(max_length=10, blank=True, null=True)
-    description = models.CharField(max_length=500, blank=True, null=True)
+    description_uz = models.CharField(max_length=500, blank=True, null=True)
     description_ru = models.CharField(max_length=255, blank=True, null=True)
     description_en = models.CharField(max_length=255, blank=True, null=True)
     rejisor = models.CharField(max_length=255, blank=True, null=True)
@@ -67,7 +67,7 @@ class Series(CustomBaseAbstract):
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
-        return f'{self.id} - {self.name}'
+        return f'{self.id} - {self.name_uz}'
 
 
 class CadreCinema(CustomBaseAbstract):

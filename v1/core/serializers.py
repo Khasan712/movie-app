@@ -1,12 +1,14 @@
 from rest_framework import serializers
 from .models import Genre, Category, Cinema, Series, CadreCinema, Banner, MyList, TopCinema
+from ..services.google_translate import google_translate_text
+from ..utils.const_veriables import EN_LANG, RU_LANG
 from ..utils.raise_errors import SerializerRaise400
 
 
 class SeriesLessDataSerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Series
-        fields = ('id', 'name', 'name_ru', 'name_en', 'description', 'description_ru', 'description_en', 'main_image')
+        fields = ('id', 'name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en', 'main_image')
 
 
 class CategorySeriesListSerializerV1(serializers.Serializer):
@@ -15,7 +17,9 @@ class CategorySeriesListSerializerV1(serializers.Serializer):
         series = Series.objects.filter(category_id=instance.id, parent_id=None).order_by('-id')[:5]
         return {
             'id': instance.id,
-            'name': instance.name,
+            'name_uz': instance.name_uz,
+            'name_ru': instance.name_ru,
+            'name_en': instance.name_en,
             'Series': SeriesLessDataSerializerV1(series, many=True).data
         }
 
@@ -24,7 +28,7 @@ class CinemaLessDataSerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Cinema
         fields = (
-            'id', 'name', 'name_ru', 'name_en', 'description', 'description_ru', 'description_en', 'main_image'
+            'id', 'name_uz', 'name_ru', 'name_en', 'description_uz', 'description_ru', 'description_en', 'main_image'
         )
 
 
@@ -34,7 +38,9 @@ class CategoryListSerializerV1(serializers.Serializer):
         movies = Cinema.objects.filter(category_id=instance.id).order_by('-id')[:5]
         return {
             'id': instance.id,
-            'name': instance.name,
+            'name_uz': instance.name_uz,
+            'name_ru': instance.name_ru,
+            'name_en': instance.name_en,
             'movies': CinemaLessDataSerializerV1(movies, many=True).data
         }
 
@@ -99,8 +105,8 @@ class SeriesDetailReadOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Series
         fields = (
-            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'name_ru', 'name_en', 'year',
-            'description', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video'
+            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name_uz', 'name_ru', 'name_en', 'year',
+            'description_uz', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video'
         )
 
     def to_representation(self, instance):
@@ -133,7 +139,7 @@ class SeriesReadOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Series
         fields = (
-            'id', 'genre', 'category', 'main_image', 'name', 'name_ru', 'name_en', 'year', 'description',
+            'id', 'genre', 'category', 'main_image', 'name_uz', 'name_ru', 'name_en', 'year', 'description_uz',
             'description_ru', 'description_en'
         )
 
@@ -154,9 +160,23 @@ class SeriesWriteOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Series
         fields = (
-            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'name_ru', 'name_en', 'year',
-            'description', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video', 'parent'
+            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name_uz', 'name_ru', 'name_en', 'year',
+            'description_uz', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video', 'parent'
         )
+        extra_kwargs = {
+            'name_ru': {'read_only': True},
+            'name_en': {'read_only': True},
+            'description_ru': {'read_only': True},
+            'description_en': {'read_only': True},
+        }
+
+    def create(self, validated_data):
+        validated_data['name_en'] = google_translate_text(EN_LANG, validated_data['name_uz'])
+        validated_data['name_ru'] = google_translate_text(RU_LANG, validated_data['name_uz'])
+        if validated_data.get('description_uz'):
+            validated_data['description_en'] = google_translate_text(EN_LANG, validated_data['description_uz'])
+            validated_data['description_ru'] = google_translate_text(RU_LANG, validated_data['description_uz'])
+        return super().create(validated_data)
 
     def to_representation(self, instance):
         return {
@@ -215,8 +235,8 @@ class CinemaDetailReadOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Cinema
         fields = (
-            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'name_ru', 'name_en', 'year',
-            'description', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video'
+            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name_uz', 'name_ru', 'name_en', 'year',
+            'description_uz', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video'
         )
 
     def to_representation(self, instance):
@@ -240,7 +260,7 @@ class CinemaReadOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Cinema
         fields = (
-            'id', 'genre', 'category', 'main_image', 'name', 'name_ru', 'name_en', 'year', 'description',
+            'id', 'genre', 'category', 'main_image', 'name_uz', 'name_ru', 'name_en', 'year', 'description_uz',
             'description_ru', 'description_en'
         )
 
@@ -259,9 +279,23 @@ class CinemaWriteOnlySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Cinema
         fields = (
-            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name', 'name_ru', 'name_en', 'year',
-            'description', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video'
+            'id', 'genre', 'category', 'main_image', 'trailer', 'trailer_url', 'name_uz', 'name_ru', 'name_en', 'year',
+            'description_uz', 'description_ru', 'description_en', 'rejisor', 'main_users', 'video'
         )
+        extra_kwargs = {
+            'name_ru': {'read_only': True},
+            'name_en': {'read_only': True},
+            'description_ru': {'read_only': True},
+            'description_en': {'read_only': True},
+        }
+
+    def create(self, validated_data):
+        validated_data['name_en'] = google_translate_text(EN_LANG, validated_data['name_uz'])
+        validated_data['name_ru'] = google_translate_text(RU_LANG, validated_data['name_uz'])
+        if validated_data.get('description_uz'):
+            validated_data['description_en'] = google_translate_text(EN_LANG, validated_data['description_uz'])
+            validated_data['description_ru'] = google_translate_text(RU_LANG, validated_data['description_uz'])
+        return super().create(validated_data)
 
     def to_representation(self, instance):
         return {
@@ -274,11 +308,29 @@ class GenreSerializerV1(serializers.ModelSerializer):
 
     class Meta:
         model = Genre
-        fields = ('id', 'name', 'name_ru', 'name_en')
+        fields = ('id', 'name_uz', 'name_ru', 'name_en')
+        extra_kwargs = {
+            'name_ru': {'read_only': True},
+            'name_en': {'read_only': True},
+        }
+
+    def create(self, validated_data):
+        validated_data['name_en'] = google_translate_text(EN_LANG, validated_data['name_uz'])
+        validated_data['name_ru'] = google_translate_text(RU_LANG, validated_data['name_uz'])
+        return super().create(validated_data)
 
 
 class CategorySerializerV1(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('id', 'name', 'name_ru', 'name_en')
+        fields = ('id', 'name_uz', 'name_ru', 'name_en')
+        extra_kwargs = {
+            'name_ru': {'read_only': True},
+            'name_en': {'read_only': True},
+        }
+
+    def create(self, validated_data):
+        validated_data['name_en'] = google_translate_text(EN_LANG, validated_data['name_uz'])
+        validated_data['name_ru'] = google_translate_text(RU_LANG, validated_data['name_uz'])
+        return super().create(validated_data)
 
