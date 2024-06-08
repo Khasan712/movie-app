@@ -348,16 +348,18 @@ class CinemaApiV1(
 
 class GenreAdminApiV1(
     mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin,
-    viewsets.GenericViewSet
+    mixins.DestroyModelMixin, viewsets.GenericViewSet
 ):
     queryset = Genre.objects.all().order_by('-id')
     serializer_class = GenreSerializerV1
     permission_classes = (IsAdmin,)
     http_method_names = HTTP_ALLOWED_METHODS
 
-    def check_permissions(self, request):
-        if request.method in ('POST', 'PATCH'):
-            super().check_permissions(request)
+    def get_permissions(self):
+        method = self.request.method
+        if method in ('POST', 'PATCH', 'DELETE'):
+            return [IsAdmin()]
+        return [AllowAny()]
 
     search_param = openapi.Parameter(
         'q', in_=openapi.IN_QUERY, description='Search ...', required=False, type=openapi.TYPE_STRING
@@ -379,16 +381,18 @@ class GenreAdminApiV1(
 
 class CategoryAdminApiV1(
     mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin,
-    viewsets.GenericViewSet
+    mixins.DestroyModelMixin, viewsets.GenericViewSet
 ):
     queryset = Category.objects.all().order_by('-id')
     serializer_class = CategorySerializerV1
     permission_classes = (IsAdmin,)
     http_method_names = HTTP_ALLOWED_METHODS
 
-    def check_permissions(self, request):
-        if request.method in ('POST', 'PATCH'):
-            super().check_permissions(request)
+    def get_permissions(self):
+        method = self.request.method
+        if method in ('POST', 'PATCH', 'DELETE'):
+            return [IsAdmin()]
+        return [AllowAny()]
 
     search_param = openapi.Parameter(
         'q', in_=openapi.IN_QUERY, description='Search ...', required=False, type=openapi.TYPE_STRING
